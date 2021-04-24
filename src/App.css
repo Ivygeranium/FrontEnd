@@ -1,0 +1,24 @@
+/* Boxes */
+.Container{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .box{
+    background-color: #63cff5;
+    color: #fcfcff;
+    width: 240px;
+    height: 160px;
+    border-radius: 24px;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.07);
+    margin: 20px;
+  }
+  .box:nth-child(3n){
+    background-color: #f9cff5;
+  }
+  .box:nth-child(3n+1){
+    background-color: #6259e8;
+  }
+  .topic {
+      margin-left: 20px;
+  }
