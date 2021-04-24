@@ -96,7 +96,7 @@ class App extends React.Component {
   }
 
   callApi = async () => {
-    const response = await fetch('/api/data');
+    const response = await fetch('http://hanji-serve.herokuapp.com/api/data');
     const body = await response.json();
     return body; 
   }
