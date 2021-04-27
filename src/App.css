@@ -5,8 +5,10 @@
     flex-wrap: wrap;
   }
   .box{
+    font-size: 25px;
+    font-weight: bold;
     background-color: #63cff5;
-    color: #fcfcff;
+    color:#f4f7ff;
     width: 240px;
     height: 160px;
     border-radius: 24px;

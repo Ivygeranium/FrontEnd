@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import { Route, Switch, BrowserRouter as Router, NavLink, useParams, Link } from 'react-router-dom';
-
+import DataAdd from './components/DataAdd'
 
 function Nav(props) {
   return (
@@ -9,7 +9,7 @@ function Nav(props) {
       <h1><Link to="/">Programing</Link></h1>
       <ul>
       { props.category ? props.category.map( topic => 
-        <li>
+        <li key={topic.id}>
           <NavLink to={"/"+topic.title} activeClassName="selected" className="link" >{topic.title}</NavLink> 
         </li>) : ""}
       </ul>
@@ -27,7 +27,11 @@ function Profile() {
 
 function Home() {
   return (
-    <h1>Home</h1>
+    <div className="Topics">
+      <div className="contents">
+        <h1 className="title">Home</h1>
+      </div>
+    </div>
   );
 }
 
@@ -40,7 +44,8 @@ function Topics(props) {
           <div className="contents">
             <h1 className="title">{data.title}</h1>
             <div className="Container">
-              {props.data.contents ? props.data.contents.map( box => <NavLink to={"/"+data.title+"/"+box.title} className="box">{box.title}</NavLink>) : ""}
+              {data.contents ? data.contents.title.map( box => <NavLink to={"/"+data.title+"/"+box} className="box" key={data.contents.title.indexOf(box)}>{box}</NavLink>) : ""}
+              <DataAdd category={data.id}/>
             </div>
           </div>
           <Profile></Profile>
@@ -57,18 +62,18 @@ function Topics(props) {
     var params = useParams();
     var box_title = "Sorry";
     var box_sub = "Not Found"
-    
-    for (var i = 0; i < data.contents.length; i++) {
-      if (data.contents[i].title === params.box_title) {
-        box_title = data.contents[i].title;
-        box_sub = data.contents[i].sub;
+    for (var i = 0; i < data.contents.title.length; i++) {
+      if (data.contents.title[i] === params.box_title) {
+        box_title = data.contents.title[i];
+        // box_sub = data.contents.sub[i];
         break;
       }
     }
     return (
       <div className="topic">
         <h1 className="title">{box_title}</h1>
-        <p className="contents">{box_sub}</p>
+        {/* <p className="contents">{box_sub}</p> */}
+        
       </div>
     );
   }
@@ -79,13 +84,19 @@ function Topics(props) {
 
 class App extends React.Component {
   constructor (props){
-    super(props)
-  }
-  state = {
-    data: null,
-    classification: null
+    super(props);
+    this.state = {
+      data: null,
+    }  
   }
 
+  fresh = () => {
+    this.setState({data: null});
+    this.callApi()
+      .then(res => this.setState({data: res}))
+      .catch(err => console.log(err));
+  }
+  
   componentDidMount() {
     this.callApi()
       .then(res => this.setState({data: res}))
@@ -98,6 +109,9 @@ class App extends React.Component {
   callApi = async () => {
     const response = await fetch('https://hanji-serve.herokuapp.com/api/data');
     const body = await response.json();
+    body.map( category => {
+      category['contents'] = {'title':category['contents'].split(",")};
+    })
     return body; 
   }
   // callApi_classification = async () => {
@@ -113,7 +127,7 @@ class App extends React.Component {
           <Nav category={this.state.data}/>
           <Switch>
             <Route exact path='/'> <Home /> </Route>
-            {this.state.data ? this.state.data.map( topic => <Route path={'/'+topic.title}> <Topics data={topic} /> </Route>) : ""}
+            {this.state.data ? this.state.data.map( topic => <Route path={'/'+topic.title} key="topic.id"> <Topics data={topic} /> </Route>) : ""}
             
           </Switch>
         </Router>        
