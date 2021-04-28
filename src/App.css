@@ -24,3 +24,21 @@
   .topic {
       margin-left: 20px;
   }
+
+input.title, textarea.Container {
+  background-color: #fbfcff;
+  margin:20px;
+  border:none;
+}
+input.title {
+  font-size:200%;
+  font-weight: bolder;
+  padding-bottom:10px;margin-bottom:30px;border-bottom: 2px solid darkgray;width: 90%;
+}
+textarea.Container {
+  width: 93%;
+  height: 100%;
+}
+input.title:focus, textarea.Container:focus{
+  outline:none;
+}

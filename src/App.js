@@ -1,7 +1,9 @@
 import React from 'react';
 import './App.css';
 import { Route, Switch, BrowserRouter as Router, NavLink, useParams, Link } from 'react-router-dom';
-import DataAdd from './components/DataAdd'
+import DataAdd from './components/DataAdd';
+import FadeIn from 'react-fade-in';
+const serverURL = 'https://hanji-serve.herokuapp.com';
 
 function Nav(props) {
   return (
@@ -16,16 +18,8 @@ function Nav(props) {
     </nav>
   );
 }
-function Profile() {
-  return (
-    <div className="profile">
-      <h1>Profile</h1>
-    </div>
-  );
-}
 
-
-function Home() {
+function Home(props) {
   return (
     <div className="Topics">
       <div className="contents">
@@ -35,46 +29,63 @@ function Home() {
   );
 }
 
+function Profile() {
+  return (
+    <div className="profile">
+      <h1>Task management</h1>
+    </div>
+  );
+}
+
+
 function Topics(props) {
   let data = props.data;
+  let title = props.topic.title;
   return (
     <div className="Topics">
       <Switch>
-        <Route exact path={"/"+data.title}>
-          <div className="contents">
-            <h1 className="title">{data.title}</h1>
-            <div className="Container">
-              {data.contents ? data.contents.title.map( box => <NavLink to={"/"+data.title+"/"+box} className="box" key={data.contents.title.indexOf(box)}>{box}</NavLink>) : ""}
-              <DataAdd category={data.id}/>
-            </div>
-          </div>
-          <Profile></Profile>
+        <Route exact path={"/"+title}>
+          <FadeIn className="contents">
+            <h1 className="title">{title}</h1>
+              <div className="Container">
+                  {data ? data.map( datum => <NavLink to={"/"+title+"/"+datum.title} className="box" key={datum.id}>{datum.title}</NavLink>) : ""}
+                  <NavLink to={"/"+title+"/add"} className="box">ADD BOX</NavLink>
+              </div>
+          </FadeIn>
+          <Profile />
+        </Route>
+
+        <Route path={"/"+title+"/add"}>
+          <DataAdd topic={props.topic}/>
+          <Profile />
         </Route>
         
-        <Route path={"/"+data.title+"/:box_title"}>
+        <Route path={"/"+title+"/:box_title"}>
           <Box></Box>
-          <Link to={"/"+data.title}>Go back</Link>
+          <Profile />
         </Route>
       </Switch>
     </div>
   );
+
   function Box() {
     var params = useParams();
     var box_title = "Sorry";
-    var box_sub = "Not Found"
-    for (var i = 0; i < data.contents.title.length; i++) {
-      if (data.contents.title[i] === params.box_title) {
-        box_title = data.contents.title[i];
-        // box_sub = data.contents.sub[i];
+    var box_description = "Not Found"
+    for (var i = 0; i < data.length; i++) {
+      if (data[i].title === params.box_title) {
+        box_title = data[i].title;
+        box_description = data[i].description;
         break;
       }
     }
     return (
-      <div className="topic">
-        <h1 className="title">{box_title}</h1>
-        {/* <p className="contents">{box_sub}</p> */}
-        
-      </div>
+      <FadeIn>
+        <div className="topic">
+          <h1 className="title">{box_title}</h1>
+          <p className="contents">{box_description}</p>
+        </div>
+      </FadeIn>
     );
   }
 }
@@ -86,49 +97,48 @@ class App extends React.Component {
   constructor (props){
     super(props);
     this.state = {
-      data: null,
+      category: null,
+      contents: null
     }  
   }
-
-  fresh = () => {
-    this.setState({data: null});
-    this.callApi()
-      .then(res => this.setState({data: res}))
-      .catch(err => console.log(err));
+  dataFilter(id) {
+    var arr = [];
+    this.state.contents.map( content => {
+      if(content.contents_id === id){
+        arr.push(content);
+      }
+    })
+    return arr
   }
   
   componentDidMount() {
     this.callApi()
-      .then(res => this.setState({data: res}))
+      .then(res => this.setState({category: res[0], contents: res[1]}))
       .catch(err => console.log(err));
-    // this.callApi_classification()
-    //   .then(res => this.setState({classification: res}))
-    //   .catch(err => console.log(err));
   }
 
   callApi = async () => {
-    const response = await fetch('https://hanji-serve.herokuapp.com/api/data');
-    const body = await response.json();
-    body.map( category => {
-      category['contents'] = {'title':category['contents'].split(",")};
-    })
-    return body; 
+    const response_nav = await fetch(serverURL+'/api/nav');
+    const response_contents = await fetch(serverURL+'/api/contents');
+    const body_nav = await response_nav.json();
+    const body_contents = await response_contents.json();
+
+    return [body_nav, body_contents]; 
   }
-  // callApi_classification = async () => {
-  //   const response = await fetch('/api/classification');
-  //   const body = await response.json();
-  //   return body; 
-  // }
 
   render () {
     return (
       <div className="App">
         <Router>
-          <Nav category={this.state.data}/>
+          <Nav category={this.state.category}/>
+
           <Switch>
             <Route exact path='/'> <Home /> </Route>
-            {this.state.data ? this.state.data.map( topic => <Route path={'/'+topic.title} key="topic.id"> <Topics data={topic} /> </Route>) : ""}
-            
+
+            {this.state.category ? this.state.category.map( topic => 
+            <Route path={'/'+topic.title} key={topic.id}> <Topics data={this.dataFilter(topic.id)} topic={topic}/> </Route>) : <Route path='/'><div className="loading"/></Route>}
+
+            <Route path='/'> <h1>NOT FOUNDED</h1> </Route>
           </Switch>
         </Router>        
       </div>
