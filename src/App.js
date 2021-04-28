@@ -133,7 +133,7 @@ class App extends React.Component {
           <Nav category={this.state.category}/>
 
           <Switch>
-            <Route exact path='/'> <Home /> </Route>
+            <Route exact path='/FrontEnd'> <Home /> </Route>
 
             {this.state.category ? this.state.category.map( topic => 
             <Route path={'/'+topic.title} key={topic.id}> <Topics data={this.dataFilter(topic.id)} topic={topic}/> </Route>) : <Route path='/'><div className="loading"/></Route>}
