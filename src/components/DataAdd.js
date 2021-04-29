@@ -12,14 +12,12 @@ class DataAdd extends React.Component {
       }
     }
     addData = () => {
-      const url = 'https://hanji-serve.herokuapp.com/api/add';
+      const url = 'https://hanji-serve.herokuapp.com/api/contents';
       const json = {};
       // formData.append('img', this.state.file);
       json['title'] = this.state.title;
       json['description'] = this.state.description;
       json['category'] = this.props.topic.id;
-      // json['sub'] = this.state.sub;
-      // formData.append('createtime', this.state.createtime);
       // const config = {
       //   headers:{
       //     'content-type': 'multipart/form-data'
@@ -56,7 +54,6 @@ class DataAdd extends React.Component {
             {/* img: <input type='file' name='file' file={this.state.file} value={this.state.fileName} onChange={this.handleFileChange} /> */}
             <input type='text' name='title' value={this.state.title} placeholder="Title" onChange={this.handleValueChange} className="title"/><br />
             <textarea name='description' value={this.state.description} placeholder="Description" onChange={this.handleValueChange} className="Container"/><br />
-            {/* createtime: <input type='text' name='createtime' value={this.state.createtime} onChange={this.handleValueChange} /> */}
             <button type='submit'>ADD</button>
         </form>
       )

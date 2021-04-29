@@ -2,6 +2,8 @@ import React from 'react';
 import './App.css';
 import { Route, Switch, BrowserRouter as Router, NavLink, useParams, Link } from 'react-router-dom';
 import DataAdd from './components/DataAdd';
+import DataDelete from './components/DataDelete';
+import DataUpdate from './components/DataUpdate';
 import FadeIn from 'react-fade-in';
 const serverURL = 'https://hanji-serve.herokuapp.com';
 
@@ -47,10 +49,10 @@ function Topics(props) {
         <Route exact path={"/"+title}>
           <FadeIn className="contents">
             <h1 className="title">{title}</h1>
-              <div className="Container">
-                  {data ? data.map( datum => <NavLink to={"/"+title+"/"+datum.title} className="box" key={datum.id}>{datum.title}</NavLink>) : ""}
-                  <NavLink to={"/"+title+"/add"} className="box">ADD BOX</NavLink>
-              </div>
+            <div className="Container">
+                {data ? data.map( datum => <NavLink to={"/"+title+"/"+datum.title} className="box" key={datum.id}>{datum.title}</NavLink>) : ""}
+                <NavLink to={"/"+title+"/add"} className="box">ADD BOX</NavLink>
+            </div>
           </FadeIn>
           <Profile />
         </Route>
@@ -59,11 +61,12 @@ function Topics(props) {
           <DataAdd topic={props.topic}/>
           <Profile />
         </Route>
-        
+
         <Route path={"/"+title+"/:box_title"}>
           <Box></Box>
           <Profile />
         </Route>
+
       </Switch>
     </div>
   );
@@ -81,9 +84,20 @@ function Topics(props) {
     }
     return (
       <FadeIn>
-        <div className="topic">
-          <h1 className="title">{box_title}</h1>
-          <p className="contents">{box_description}</p>
+        <div className="contents">
+          <Switch >
+            <Route exact path={'/'+title+'/'+box_title}>
+              <h1 className="title">{box_title}</h1>
+              <p className="Container">{box_description}</p>
+              <DataDelete title={box_title} loc={title}/>
+              <Link to={'./'+box_title+'/update'}>Update</Link>
+            </Route>
+
+            <Route path={'/'+title+'/'+box_title+'/update'}>
+              <DataUpdate title={box_title} description={box_description} loc={title}/>
+            </Route>
+            
+          </Switch>
         </div>
       </FadeIn>
     );
@@ -133,7 +147,7 @@ class App extends React.Component {
           <Nav category={this.state.category}/>
 
           <Switch>
-            <Route exact path='/FrontEnd'> <Home /> </Route>
+            <Route exact path='/'> <Home /> </Route>
 
             {this.state.category ? this.state.category.map( topic => 
             <Route path={'/'+topic.title} key={topic.id}> <Topics data={this.dataFilter(topic.id)} topic={topic}/> </Route>) : <Route path='/'><div className="loading"/></Route>}
