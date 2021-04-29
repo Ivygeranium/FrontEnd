@@ -38,7 +38,7 @@ class DataUpdate extends React.Component {
       }
     render() {
         return (
-            <form onSubmit={this.handleFormSubmit}>
+            <form onSubmit={this.handleFormSubmit} className='contents'>
                 <input type='text' name='title' value={this.state.title} placeholder="Title" onChange={this.handleValueChange} className="title"/><br />
                 <textarea name='description' value={this.state.description} placeholder="Description" onChange={this.handleValueChange} className="Container"/><br />
                 <button type='submit'>UPDATE</button>

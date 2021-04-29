@@ -37,7 +37,7 @@ input.title {
 }
 textarea.Container {
   width: 93%;
-  height: 100%;
+  height: 95vh;
 }
 input.title:focus, textarea.Container:focus{
   outline:none;

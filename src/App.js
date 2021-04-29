@@ -83,23 +83,21 @@ function Topics(props) {
       }
     }
     return (
-      <FadeIn>
-        <div className="contents">
-          <Switch >
-            <Route exact path={'/'+title+'/'+box_title}>
-              <h1 className="title">{box_title}</h1>
-              <p className="Container">{box_description}</p>
-              <DataDelete title={box_title} loc={title}/>
-              <Link to={'./'+box_title+'/update'}>Update</Link>
-            </Route>
-
-            <Route path={'/'+title+'/'+box_title+'/update'}>
-              <DataUpdate title={box_title} description={box_description} loc={title}/>
-            </Route>
-            
-          </Switch>
-        </div>
-      </FadeIn>
+      <Switch >
+        <Route exact path={'/'+title+'/'+box_title}>
+          <FadeIn className="contents">
+            <h1 className="title">{box_title}</h1>
+            <p className="Container">{box_description}</p>
+            <DataDelete title={box_title} loc={title}/>
+            <Link to={'./'+box_title+'/update'}>Update</Link>
+          </FadeIn>
+        </Route>
+  
+        <Route path={'/'+title+'/'+box_title+'/update'}>
+          <DataUpdate title={box_title} description={box_description} loc={title}/>
+        </Route>
+        
+      </Switch>
     );
   }
 }
